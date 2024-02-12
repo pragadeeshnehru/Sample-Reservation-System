@@ -6,7 +6,6 @@ function App() {
   return (
     <div className="App">
       <Navbar/>
-      <button class="btn btn-primary">This is a button</button>
     </div>
   );
 }

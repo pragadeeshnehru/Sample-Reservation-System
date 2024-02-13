@@ -6,9 +6,9 @@ const Hall = require("../models/hall");
 router.get("/getallhalls", async (req, res) => {
   try {
     const halls = await Hall.find({});
-    return res.json({halls});
+    res.send(halls);
   } catch (error) {
-    return res.status(400).json({message : error});
+    return res.status(400).json({ message: error });
   }
 });
 

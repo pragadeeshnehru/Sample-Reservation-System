@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 var mongoURL =
-  "mongodb+srv://pragadeeshnehru:<7917145518@Jla>@cluster0.l5eiz8h.mongodb.net/";
+  "mongodb+srv://pragadeeshnehru:7917145518jla@cluster0.l5eiz8h.mongodb.net/";
 
 mongoose.connect(mongoURL);
 var connection = mongoose.connection;

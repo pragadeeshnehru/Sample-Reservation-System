@@ -27,3 +27,7 @@ code {
 .navbar-nav {
   margin-left: auto !important;
 }
+
+.dropdown-menu {
+  transition: all 2.3s ease;
+}

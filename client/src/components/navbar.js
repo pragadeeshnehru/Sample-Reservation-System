@@ -4,7 +4,7 @@ function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg">
       <a className="navbar-brand" >
-        MCET Seminar Hall Portal
+        MCET Seminar Hall 
       </a>
       
       <div className="collapse navbar-collapse" id="navbarNav">

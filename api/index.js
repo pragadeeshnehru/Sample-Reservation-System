@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(
   cors({
     credentials: true,
-    origin: "http://192.168.117.228:5173",
+    origin: "http://127.0.0.1:5173",
   })
 );
 
@@ -34,7 +34,16 @@ app.post("/register", async (req, res) => {
   } catch (e) {
     res.status(422).json(e);
   }
-  
+});
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+    const userDoc = await User.findOne({ email });
+    if (userDoc) {
+      res.json("found");
+    } else {
+      res.json("not found");
+    }
 });
 
 app.listen(3000);

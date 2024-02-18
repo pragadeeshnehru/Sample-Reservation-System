@@ -11,6 +11,6 @@ button{
 }
 
 button.primary {
-  background-color: #f76d11;
+  background-color: #F76D11;
   @apply p-2 w-full text-white rounded-2xl;
 }

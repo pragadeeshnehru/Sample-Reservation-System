@@ -57,6 +57,15 @@ export default function AccountPage() {
           </button>
         </div>
       )}
+
+      {subpage === "bookings" && (
+        <div className="text-center max-w-lg mx-auto">
+          Book Now
+          <button onClick={logout} className="primary max-w-sm mt-2">
+            Book Now
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -14,3 +14,7 @@ button.primary {
   background-color: #F76D11;
   @apply p-2 w-full text-white rounded-2xl;
 }
+
+.card-header, .card-body {
+  @apply items-center text-center;
+}

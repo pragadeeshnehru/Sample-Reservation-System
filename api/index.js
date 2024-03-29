@@ -105,16 +105,56 @@ app.post("/auth", (req, res) => {
 });
 
 app.post("/submitForm", userValue, async (req, res) => {
-  const { hall, department, date, startTime, finishTime, purpose, count, audio } = req.body;
+  const { hall, date, startTime, finishTime } = req.body;
+  const userId = req.user.id;
+
   try {
+    const existingForm = await Hall.findOne({
+      hall,
+      date,
+      $or: [
+        {
+          $and: [
+            { startTime: { $lte: startTime } },
+            { finishTime: { $gte: startTime } },
+          ],
+        },
+        {
+          $and: [
+            { startTime: { $lte: finishTime } },
+            { finishTime: { $gte: finishTime } },
+          ],
+        },
+      ],
+    });
+
+    if (existingForm) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Another user has already submitted for the given date and time",
+        });
+    }
+
     const userForm = await Hall.create({
-      hall,department,date,startTime, finishTime, purpose, count, audio,
+      hall,
+      department: req.body.department,
+      date,
+      startTime,
+      finishTime,
+      purpose: req.body.purpose,
+      count: req.body.count,
+      audio: req.body.audio,
+      userId,
     });
     res.json(userForm);
   } catch (e) {
-    res.status(422).json(e);
+    console.error("Error submitting form:", e);
+    res
+      .status(500)
+      .json({ error: "An error occurred while processing your request." });
   }
-  console.log(req.body.token);
   console.log(req.user.id);
 });
 

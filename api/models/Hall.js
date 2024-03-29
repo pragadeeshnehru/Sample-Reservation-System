@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const HallSchema = new mongoose.Schema({
   name: String,
-  hall_id: { type: String, unique: true },
+  hall_id: String,
   checkIn: Number,
   checkOut: Number,
   maxCount: Number,

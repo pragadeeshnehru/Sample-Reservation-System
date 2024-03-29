@@ -4,6 +4,7 @@ import { createContext, useEffect, useState } from "react";
 export const UserContext = createContext({});
 
 export function UserContextProvider({ children }) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
   useEffect(() => {
@@ -11,6 +12,7 @@ export function UserContextProvider({ children }) {
       axios.get("/profile").then(({ data }) => {
         setUser(data);
         setReady(true);
+        setIsLoggedIn(true);
       });
     }
   }, []);

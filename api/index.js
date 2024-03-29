@@ -81,4 +81,16 @@ app.post("/logout", (req, res) => {
   res.cookie("token", "").json(true);
 });
 
+app.post("/auth", (req, res) => {
+  const token = req.body.token;
+
+  jwt.verify(token, jwtSecret, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Invalid Token" });
+    } else {
+      return res.status(200).json({ messgae: "Token is valid" });
+    }
+  });
+});
+
 app.listen(3000);

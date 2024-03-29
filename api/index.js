@@ -4,13 +4,24 @@ const mongoose = require("mongoose");
 const app = express();
 require("dotenv").config();
 const User = require("./models/User.js");
+const Hall = require("./models/Hall.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const CookieParser = require("cookie-parser");
 const cookieParser = require("cookie-parser");
 
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = "f23f3hj24vj5iqw";
+
+const userValue = (req, res, next) => {
+  const { token } = req.cookies;
+  jwt.verify(token, jwtSecret, (err, user) => {
+    if (err) {
+      return res.sendStatus(403);
+    }
+    req.user = user;
+    next();
+  });
+};
 
 app.use(express.json());
 app.use(cookieParser());
@@ -91,6 +102,20 @@ app.post("/auth", (req, res) => {
       return res.status(200).json({ messgae: "Token is valid" });
     }
   });
+});
+
+app.post("/submitForm", userValue, async (req, res) => {
+  const { hall, department, date, startTime, finishTime, purpose, count, audio } = req.body;
+  try {
+    const userForm = await Hall.create({
+      hall,department,date,startTime, finishTime, purpose, count, audio,
+    });
+    res.json(userForm);
+  } catch (e) {
+    res.status(422).json(e);
+  }
+  console.log(req.body.token);
+  console.log(req.user.id);
 });
 
 app.listen(3000);

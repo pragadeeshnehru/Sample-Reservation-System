@@ -26,6 +26,7 @@ export default function FormsPage() {
         purpose,
         count,
         audio,
+        status:"pending",
       });
       alert("Form submitted Sucessfully");
     } catch (e) {
@@ -185,7 +186,7 @@ export default function FormsPage() {
             onChange={(ev) => setAudio(ev.target.checked)}
           />
         </div>
-        <button type="submit">Submit</button>
+        <button className="btn bg-main text-white hover:bg-main hover:text-white" type="submit">Submit</button>
       </form>
     </div>
   );

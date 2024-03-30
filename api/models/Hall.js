@@ -10,6 +10,7 @@ const HallSchema = new mongoose.Schema({
   count: { type: Number, required: true },
   audio: { type: Boolean, required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  status: { type: String, required: true },
 });
 
 const HallModel = mongoose.model("Hall", HallSchema);

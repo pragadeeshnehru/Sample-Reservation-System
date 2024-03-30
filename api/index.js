@@ -14,10 +14,15 @@ const jwtSecret = "f23f3hj24vj5iqw";
 
 const userValue = (req, res, next) => {
   const { token } = req.cookies;
-  jwt.verify(token, jwtSecret, (err, user) => {
+  jwt.verify(token, jwtSecret, async (err, user) => {
     if (err) {
       return res.sendStatus(403);
     }
+    const userDetails = await User.findById(user.id);
+    user = {
+      ...user,
+      userType: userDetails["userType"],
+    };
     req.user = user;
     next();
   });
@@ -45,6 +50,7 @@ app.post("/register", async (req, res) => {
       name,
       email,
       password: bcrypt.hashSync(password, bcryptSalt),
+      userType,
     });
     res.json(userDoc);
   } catch (e) {
@@ -80,8 +86,8 @@ app.get("/profile", (req, res) => {
   if (token) {
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
       if (err) throw err;
-      const { name, email, _id } = await User.findById(userData.id);
-      res.json({ name, email, _id });
+      const { name, email, userType, _id } = await User.findById(userData.id);
+      res.json({ name, email, userType, _id });
     });
   } else {
     res.json(null);
@@ -129,12 +135,9 @@ app.post("/submitForm", userValue, async (req, res) => {
     });
 
     if (existingForm) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Another user has already submitted for the given date and time",
-        });
+      return res.status(400).json({
+        error: "Another user has already submitted for the given date and time",
+      });
     }
 
     const userForm = await Hall.create({
@@ -147,6 +150,7 @@ app.post("/submitForm", userValue, async (req, res) => {
       count: req.body.count,
       audio: req.body.audio,
       userId,
+      status: req.body.status,
     });
     res.json(userForm);
   } catch (e) {
@@ -156,6 +160,74 @@ app.post("/submitForm", userValue, async (req, res) => {
       .json({ error: "An error occurred while processing your request." });
   }
   console.log(req.user.id);
+});
+
+app.get("/bookings", userValue, async (req, res) => {
+  try {
+    const userID = req.user.id;
+    const bookings = await Hall.find({ userId: userID });
+    res.json(bookings);
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.get("/users", userValue, async (req, res) => {
+  if (req.user && req.user.userType === 1) {
+    try {
+      const bookings = await Hall.aggregate([
+        {
+          $lookup: {
+            from: "users", // Name of the User collection
+            localField: "userId",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $unwind: "$user", // Unwind the user array
+        },
+        {
+          $project: {
+            hall: 1,
+            department: 1,
+            date: 1,
+            startTime: 1,
+            finishTime: 1,
+            purpose: 1,
+            count: 1,
+            audio: 1,
+            status: 1,
+            userName: "$user.name", // Extract user name
+          },
+        },
+      ]);
+      console.log(bookings.userName);
+      res.json(bookings);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  } else {
+    res.status(403).json({ error: "Forbidden" });
+  }
+});
+
+app.put("/approve/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const booking = await Hall.findById(id);
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not Found" });
+    }
+    booking.status = "approved";
+    await booking.save();
+    res.json(booking);
+  } catch (error) {
+    console.error("Error approving booking:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 app.listen(3000);

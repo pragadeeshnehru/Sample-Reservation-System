@@ -179,14 +179,14 @@ app.get("/users", userValue, async (req, res) => {
       const bookings = await Hall.aggregate([
         {
           $lookup: {
-            from: "users", // Name of the User collection
+            from: "users",
             localField: "userId",
             foreignField: "_id",
             as: "user",
           },
         },
         {
-          $unwind: "$user", // Unwind the user array
+          $unwind: "$user", 
         },
         {
           $project: {
@@ -199,11 +199,10 @@ app.get("/users", userValue, async (req, res) => {
             count: 1,
             audio: 1,
             status: 1,
-            userName: "$user.name", // Extract user name
+            userName: "$user.name",
           },
         },
       ]);
-      console.log(bookings.userName);
       res.json(bookings);
     } catch (error) {
       console.error("Error fetching bookings:", error);
